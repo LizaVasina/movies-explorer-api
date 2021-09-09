@@ -14,6 +14,7 @@ const auth = require('./middlewares/auth');
 
 const { errorsHandler } = require('./middlewares/errorsHandler');
 const NotFoundError = require('./errors/not-found');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
@@ -24,6 +25,8 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -46,6 +49,7 @@ app.use('*', (req, res, next) => {
   next(new NotFoundError('Ресурс не найден'));
 });
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorsHandler);
 
