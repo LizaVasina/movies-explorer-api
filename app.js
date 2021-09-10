@@ -16,7 +16,7 @@ const { errorsHandler } = require('./middlewares/errorsHandler');
 const NotFoundError = require('./errors/not-found');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect('mongodb://localhost:27017/moviesdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,

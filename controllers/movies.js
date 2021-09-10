@@ -7,7 +7,9 @@ const CastError = require('../errors/cast-error');
 const ValidationError = require('../errors/validation-error');
 
 module.exports.getMovies = (req, res) => { // получаем все фильмы
-  Movie.find({})
+  const owner = req.user._id;
+
+  Movie.find({ owner })
     .then((movies) => res.send(movies))
     .catch((err) => { res.status(500).send({ message: err }); });
 };
