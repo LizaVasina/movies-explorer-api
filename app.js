@@ -1,19 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-const usersRouter = require('./routes/users');
-const moviesRouter = require('./routes/movies');
-
-const { createUser, login, logout } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-
+const Router = require('./routes/index');
 const { errorsHandler } = require('./middlewares/errorsHandler');
-const NotFoundError = require('./errors/not-found');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 mongoose.connect('mongodb://localhost:27017/moviesdb', {
@@ -23,31 +20,22 @@ mongoose.connect('mongodb://localhost:27017/moviesdb', {
   useUnifiedTopology: true,
 });
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+
+app.use(cors());
+app.use(helmet());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
-}), login);
-app.delete('/signout', logout);
-
-app.use('/users', auth, usersRouter);
-app.use('/movies', auth, moviesRouter);
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Ресурс не найден'));
-});
+app.use(Router);
 
 app.use(errorLogger);
 app.use(errors());
