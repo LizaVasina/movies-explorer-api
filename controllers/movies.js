@@ -55,15 +55,15 @@ module.exports.postMovie = (req, res, next) => { // добавляем филь�
 };
 
 module.exports.deleteMovieById = (req, res, next) => { // удаляем фильм из избранного
-  Movie.findById(req.params.movieId)
-    .orFail(new NotFoundError('Ресурс не найден'))
-    .then((movie) => {
-      if (String(movie.owner) === String(req.user._id)) {
+  Movie.findById({ _id: req.params.movieId })
+    .orFail(new NotFoundError('Ресурс не найден тута'))
+    .then((movie) => { // проверка на соответствие текущего пользователя и создателя фильма
+      if (String(movie.owner) !== String(req.user._id)) {
         throw new Error('Cant delete');
       }
 
       return Movie.findByIdAndDelete(req.params.movieId)
-        .orFail(new NotFoundError('Ресурс не найден'))
+        .orFail(new NotFoundError('Ресурс не найден тут'))
         .then(() => res.status(200).send({ message: 'Фильм успешно удален' }))
         .catch(next);
     })

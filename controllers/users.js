@@ -31,6 +31,10 @@ module.exports.login = (req, res, next) => {
     });
 };
 
+module.exports.logout = (req, res) => {
+  res.clearCookie('jwt').status(200).send({ message: 'Пользователь успешно деавторизован' });
+};
+
 module.exports.getUser = (req, res, next) => { // получаем информацию о текущем пользователе
   const id = req.user._id;
 

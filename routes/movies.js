@@ -34,15 +34,15 @@ moviesRouter.post('/', celebrate({ // создаем фильм
 
       return v;
     }),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
 }), postMovie);
 
-moviesRouter.delete('/movieId', celebrate({ // удаляем фильм
+moviesRouter.delete('/:movieId', celebrate({ // удаляем фильм
   params: Joi.object().keys({
-    movieId: Joi.string().required().hex(),
+    movieId: Joi.required(),
   }),
 }), deleteMovieById);
 

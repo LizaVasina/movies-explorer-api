@@ -9,7 +9,7 @@ const app = express();
 const usersRouter = require('./routes/users');
 const moviesRouter = require('./routes/movies');
 
-const { createUser, login } = require('./controllers/users');
+const { createUser, login, logout } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
 const { errorsHandler } = require('./middlewares/errorsHandler');
@@ -41,10 +41,10 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
+app.delete('/signout', logout);
 
-app.use(auth);
-app.use('/users', usersRouter);
-app.use('/movies', moviesRouter);
+app.use('/users', auth, usersRouter);
+app.use('/movies', auth, moviesRouter);
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Ресурс не найден'));
 });
