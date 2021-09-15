@@ -1,3 +1,6 @@
+const process = require('process');
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -6,14 +9,14 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DATABASE } = process.env;
 const app = express();
 
 const Router = require('./routes/index');
 const { errorsHandler } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
+mongoose.connect(DATABASE, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
