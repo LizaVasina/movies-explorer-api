@@ -23,6 +23,18 @@ mongoose.connect(DATABASE, {
   useUnifiedTopology: true,
 });
 
+const whiteList = ['http://domainname.movies.nomoredomains.monster',
+  'https://domainname.movies.nomoredomains.monster'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    }
+  },
+  credentials: true,
+};
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -30,7 +42,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(helmet());
 
 app.use(bodyParser.json());
