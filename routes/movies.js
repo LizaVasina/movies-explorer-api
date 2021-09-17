@@ -34,7 +34,7 @@ moviesRouter.post('/', celebrate({ // создаем фильм
 
       return v;
     }),
-    movieId: Joi.number().required(),
+    movieId: Joi.string().hex().length(24).required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),

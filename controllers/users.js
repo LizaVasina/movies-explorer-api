@@ -1,4 +1,3 @@
-const process = require('process');
 require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
@@ -30,7 +29,7 @@ module.exports.login = (req, res, next) => {
         .status(200).send({ userToken: token });
     })
     .catch(() => {
-      next(new InvalidTokenError('Ошибка авторизации'));
+      next(new InvalidTokenError('Неправильная почта или пароль'));
     });
 };
 
@@ -77,7 +76,7 @@ module.exports.updateUserInfo = (req, res, next) => { // обновляем да
           next(err);
         });
     })
-    .catch(() => res.status(500).send({ message: 'ошибка' }));
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {

@@ -6,12 +6,12 @@ const NoRightsError = require('../errors/no-rights-error');
 const CastError = require('../errors/cast-error');
 const ValidationError = require('../errors/validation-error');
 
-module.exports.getMovies = (req, res) => { // получаем все фильмы
+module.exports.getMovies = (req, res, next) => { // получаем все фильмы
   const owner = req.user._id;
 
   Movie.find({ owner })
     .then((movies) => res.send(movies))
-    .catch((err) => { res.status(500).send({ message: err }); });
+    .catch(next);
 };
 
 module.exports.postMovie = (req, res, next) => { // добавляем фильм в избранное
@@ -56,14 +56,14 @@ module.exports.postMovie = (req, res, next) => { // добавляем филь�
 
 module.exports.deleteMovieById = (req, res, next) => { // удаляем фильм из избранного
   Movie.findById({ _id: req.params.movieId })
-    .orFail(new NotFoundError('Ресурс не найден тута'))
+    .orFail(new NotFoundError('Ресурс не найден'))
     .then((movie) => { // проверка на соответствие текущего пользователя и создателя фильма
       if (String(movie.owner) !== String(req.user._id)) {
         throw new Error('Cant delete');
       }
 
       return Movie.findByIdAndDelete(req.params.movieId)
-        .orFail(new NotFoundError('Ресурс не найден тут'))
+        .orFail(new NotFoundError('Ресурс не найден'))
         .then(() => res.status(200).send({ message: 'Фильм успешно удален' }))
         .catch(next);
     })
